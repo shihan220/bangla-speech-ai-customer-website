@@ -1,12 +1,34 @@
+import os
 from pathlib import Path
+
+from django.core.exceptions import ImproperlyConfigured
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-bangla-speech-ai-change-in-production'
+load_dotenv(BASE_DIR / '.env')
 
-DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+def env_bool(name, default=False):
+    return os.getenv(name, str(default)).lower() in ('1', 'true', 'yes', 'on')
+
+
+def required_env(name):
+    value = os.getenv(name)
+    if not value:
+        raise ImproperlyConfigured(f'{name} must be set in the environment.')
+    return value
+
+
+SECRET_KEY = required_env('SECRET_KEY')
+
+DEBUG = env_bool('DEBUG', False)
+
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,[::1]').split(',')
+    if host.strip()
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -51,8 +73,12 @@ WSGI_APPLICATION = 'bangla_speech_ai.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': required_env('DB_NAME'),
+        'USER': required_env('DB_USER'),
+        'PASSWORD': required_env('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
