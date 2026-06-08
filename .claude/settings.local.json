@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python manage.py makemigrations core --name=\"add_pricingplan\")",
+      "Bash(python manage.py migrate)"
+    ]
+  }
+}

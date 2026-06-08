@@ -1,0 +1,46 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Hero Section{% endblock %}
+{% block content %}
+<div class="db-topbar">
+  <div class="db-topbar-left">
+    <div class="db-breadcrumb">
+      <a href="{% url 'db_index' %}">Overview</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <span>Hero Section</span>
+    </div>
+    <h1 class="db-page-title">Hero Section</h1>
+    <p style="font-size:13px;color:var(--text-3);margin-top:2px;">Main headline, subtitle and buttons at the top of the homepage</p>
+  </div>
+</div>
+<div class="db-content">
+  {% if messages %}{% for msg in messages %}<div class="db-alert db-alert-success" style="margin-bottom:20px;">{{ msg }}</div>{% endfor %}{% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <div class="db-fieldset">
+      <div class="db-fieldset-header"><p class="db-fieldset-title">Badge &amp; Title</p></div>
+      <div class="db-fieldset-body">
+        <div class="db-form-grid-2">
+          {% include 'dashboard/includes/field.html' with field=form.hero_badge %}
+          {% include 'dashboard/includes/field.html' with field=form.hero_title_highlight %}
+        </div>
+        {% include 'dashboard/includes/field.html' with field=form.hero_title %}
+        {% include 'dashboard/includes/field.html' with field=form.hero_subtitle %}
+      </div>
+    </div>
+    <div class="db-fieldset">
+      <div class="db-fieldset-header"><p class="db-fieldset-title">Button</p></div>
+      <div class="db-fieldset-body" style="max-width:400px;">
+        {% include 'dashboard/includes/field.html' with field=form.hero_btn_primary %}
+        <p style="font-size:12px;color:var(--text-3);margin-top:-10px;">This button opens the Book a Demo popup.</p>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button type="submit" class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+        Save
+      </button>
+      <a href="{% url 'db_index' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

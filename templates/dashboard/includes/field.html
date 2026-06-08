@@ -1,0 +1,43 @@
+<div class="field-group{% if field.errors %} has-error{% endif %}">
+  {% if field.field.widget.input_type == 'checkbox' %}
+    <div class="field-check-row">
+      {{ field }}
+      <label class="field-label" for="{{ field.id_for_label }}" style="cursor:pointer;">{{ field.label }}</label>
+    </div>
+  {% elif field.field.widget.input_type == 'file' %}
+    <label class="field-label">{{ field.label }}</label>
+    <div class="db-file-wrap">
+      {% if field.value %}
+        <div class="db-file-current">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          Current:&nbsp;<a href="/media/{{ field.value }}" target="_blank">{{ field.value }}</a>
+        </div>
+        <div class="db-file-clear-row">
+          <input type="checkbox" name="{{ field.html_name }}-clear" id="{{ field.auto_id }}_clear" style="accent-color:var(--accent);">
+          <label for="{{ field.auto_id }}_clear" style="font-size:12px;color:var(--text-3);cursor:pointer;">Clear current file</label>
+        </div>
+        <div>
+          <label class="field-hint" style="display:block;margin-bottom:4px;">Replace:</label>
+          <input type="file" name="{{ field.html_name }}" id="{{ field.auto_id }}" style="font-size:13px;color:var(--text-2);font-family:var(--font);">
+        </div>
+      {% else %}
+        <input type="file" name="{{ field.html_name }}" id="{{ field.auto_id }}" style="font-size:13px;color:var(--text-2);font-family:var(--font);">
+      {% endif %}
+    </div>
+  {% else %}
+    <label class="field-label" for="{{ field.id_for_label }}">
+      {{ field.label }}
+      {% if field.field.required %}<span class="req">*</span>{% endif %}
+    </label>
+    {{ field }}
+  {% endif %}
+
+  {% if field.help_text %}
+    <p class="field-hint">{{ field.help_text }}</p>
+  {% endif %}
+  {% if field.errors %}
+    {% for error in field.errors %}
+      <p class="field-error">{{ error }}</p>
+    {% endfor %}
+  {% endif %}
+</div>

@@ -1,0 +1,166 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Overview{% endblock %}
+
+{% block content %}
+<div class="db-topbar">
+  <div class="db-topbar-left">
+    <h1 class="db-page-title">Overview</h1>
+    <p style="font-size:13px;color:var(--text-3);margin-top:2px;">Bangla Speech AI — Content Management</p>
+  </div>
+  <div class="db-topbar-actions">
+    <a href="/" target="_blank" class="btn btn-secondary" style="font-size:12px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      View Site
+    </a>
+  </div>
+</div>
+
+<div class="db-content">
+  <div class="db-overview-grid">
+
+    <!-- Voice Cards -->
+    <a href="{% url 'db_voices' %}" class="db-ov-card" style="--card-color:#F0A050;--card-dim:rgba(240,160,80,0.12);">
+      <div class="db-ov-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </div>
+      <div class="db-ov-num">{{ vc_total }}</div>
+      <div class="db-ov-label">Voice Cards</div>
+      <div class="db-ov-sub">{{ vc_active }} active</div>
+      <div class="db-ov-link">Manage →</div>
+    </a>
+
+    <!-- Stats -->
+    <a href="{% url 'db_stats' %}" class="db-ov-card" style="--card-color:#4A90E2;--card-dim:rgba(74,144,226,0.12);">
+      <div class="db-ov-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+      </div>
+      <div class="db-ov-num">{{ stat_count }}</div>
+      <div class="db-ov-label">Stats</div>
+      <div class="db-ov-sub">Shown in stats bar</div>
+      <div class="db-ov-link">Manage →</div>
+    </a>
+
+    <!-- FAQs -->
+    <a href="{% url 'db_faqs' %}" class="db-ov-card" style="--card-color:#22c55e;--card-dim:rgba(34,197,94,0.12);">
+      <div class="db-ov-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <div class="db-ov-num">{{ faq_total }}</div>
+      <div class="db-ov-label">FAQs</div>
+      <div class="db-ov-sub">{{ faq_active }} active</div>
+      <div class="db-ov-link">Manage →</div>
+    </a>
+
+    <!-- Use Cases -->
+    <a href="{% url 'db_usecases' %}" class="db-ov-card" style="--card-color:#a855f7;--card-dim:rgba(168,85,247,0.12);">
+      <div class="db-ov-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+      </div>
+      <div class="db-ov-num">{{ uc_total }}</div>
+      <div class="db-ov-label">Use Cases</div>
+      <div class="db-ov-sub">{{ uc_active }} active</div>
+      <div class="db-ov-link">Manage →</div>
+    </a>
+
+    <!-- How It Works -->
+    <a href="{% url 'db_hiw' %}" class="db-ov-card" style="--card-color:#14b8a6;--card-dim:rgba(20,184,166,0.12);">
+      <div class="db-ov-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </div>
+      <div class="db-ov-num">{{ hiw_count }}</div>
+      <div class="db-ov-label">How It Works</div>
+      <div class="db-ov-sub">Steps on homepage</div>
+      <div class="db-ov-link">Manage →</div>
+    </a>
+
+    <!-- Pricing -->
+    <a href="{% url 'db_pricing' %}" class="db-ov-card" style="--card-color:#22c55e;--card-dim:rgba(34,197,94,0.12);">
+      <div class="db-ov-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <div class="db-ov-num">{{ pricing_count }}</div>
+      <div class="db-ov-label">Pricing Plans</div>
+      <div class="db-ov-sub">Shown on homepage</div>
+      <div class="db-ov-link">Manage →</div>
+    </a>
+
+    <!-- Demo Bookings -->
+    <a href="{% url 'db_bookings' %}" class="db-ov-card" style="--card-color:#F0A050;--card-dim:rgba(240,160,80,0.12);">
+      <div class="db-ov-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <div class="db-ov-num">{{ booking_count }}</div>
+      <div class="db-ov-label">Demo Bookings</div>
+      <div class="db-ov-sub">From "Book a Demo" form</div>
+      <div class="db-ov-link">View all →</div>
+    </a>
+
+    <!-- Contact Messages -->
+    <a href="{% url 'db_contacts' %}" class="db-ov-card" style="--card-color:#38bdf8;--card-dim:rgba(56,189,248,0.12);">
+      <div class="db-ov-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </div>
+      <div class="db-ov-num">{{ contact_count }}</div>
+      <div class="db-ov-label">Contact Messages</div>
+      <div class="db-ov-sub">From "Contact Us" form</div>
+      <div class="db-ov-link">View all →</div>
+    </a>
+
+    <!-- Site Settings -->
+    <a href="{% url 'db_settings' %}" class="db-ov-card" style="--card-color:rgba(244,244,246,0.4);--card-dim:rgba(244,244,246,0.06);">
+      <div class="db-ov-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </div>
+      <div class="db-ov-num" style="font-size:18px;margin-bottom:6px;">Site</div>
+      <div class="db-ov-label">Settings</div>
+      <div class="db-ov-sub">Logo, company name</div>
+      <div class="db-ov-link">Edit →</div>
+    </a>
+
+    <!-- Hero Section -->
+    <a href="{% url 'db_hero' %}" class="db-ov-card" style="--card-color:#f472b6;--card-dim:rgba(244,114,182,0.12);">
+      <div class="db-ov-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div class="db-ov-num" style="font-size:18px;margin-bottom:6px;">Hero</div>
+      <div class="db-ov-label">Hero Section</div>
+      <div class="db-ov-sub">Title, subtitle, buttons</div>
+      <div class="db-ov-link">Edit →</div>
+    </a>
+
+    <!-- Announcement -->
+    <a href="{% url 'db_announcement' %}" class="db-ov-card" style="--card-color:#fb923c;--card-dim:rgba(251,146,60,0.12);">
+      <div class="db-ov-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17H2a3 3 0 000 6h20a3 3 0 000-6z"/><path d="M12 17V3"/><path d="M5 9l7-6 7 6"/></svg>
+      </div>
+      <div class="db-ov-num" style="font-size:18px;margin-bottom:6px;">Ann</div>
+      <div class="db-ov-label">Announcement Bar</div>
+      <div class="db-ov-sub">Top strip text</div>
+      <div class="db-ov-link">Edit →</div>
+    </a>
+
+    <!-- CTA & Headings -->
+    <a href="{% url 'db_cta_headings' %}" class="db-ov-card" style="--card-color:#34d399;--card-dim:rgba(52,211,153,0.12);">
+      <div class="db-ov-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <div class="db-ov-num" style="font-size:18px;margin-bottom:6px;">CTA</div>
+      <div class="db-ov-label">CTA &amp; Headings</div>
+      <div class="db-ov-sub">Banner, section titles</div>
+      <div class="db-ov-link">Edit →</div>
+    </a>
+
+    <!-- API Section -->
+    <a href="{% url 'db_api_section' %}" class="db-ov-card" style="--card-color:#818cf8;--card-dim:rgba(129,140,248,0.12);">
+      <div class="db-ov-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </div>
+      <div class="db-ov-num" style="font-size:18px;margin-bottom:6px;">API</div>
+      <div class="db-ov-label">API Section</div>
+      <div class="db-ov-sub">Badge, text, features, code</div>
+      <div class="db-ov-link">Edit →</div>
+    </a>
+
+  </div>
+</div>
+{% endblock %}

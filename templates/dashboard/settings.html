@@ -1,0 +1,68 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Site Settings{% endblock %}
+
+{% block content %}
+<div class="db-topbar">
+  <div class="db-topbar-left">
+    <h1 class="db-page-title">Site Settings</h1>
+    <p style="font-size:13px;color:var(--text-3);margin-top:2px;">Company name, logo &amp; favicon</p>
+  </div>
+</div>
+
+<div class="db-content">
+  {% if messages %}{% for msg in messages %}<div class="db-alert db-alert-success" style="margin-bottom:20px;">{{ msg }}</div>{% endfor %}{% endif %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="db-fieldset">
+      <div class="db-fieldset-header" style="display:flex;align-items:center;gap:10px;">
+        <p class="db-fieldset-title">Branding</p>
+        <span style="font-size:11px;color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0;">Navbar, footer &amp; browser tab</span>
+      </div>
+      <div class="db-fieldset-body">
+        <div class="db-form-grid-2">
+          {% include 'dashboard/includes/field.html' with field=form.company_name %}
+          {% include 'dashboard/includes/field.html' with field=form.contact_email %}
+        </div>
+        <div class="db-form-grid-2">
+          <div>
+            {% include 'dashboard/includes/field.html' with field=form.logo_white %}
+            {% if form.instance.logo_white %}
+            <div style="margin-top:10px;padding:10px;background:var(--bg);border-radius:8px;display:inline-block;">
+              <img src="{{ form.instance.logo_white.url }}" alt="White logo" style="height:36px;object-fit:contain;max-width:160px;">
+            </div>
+            {% endif %}
+          </div>
+          <div>
+            {% include 'dashboard/includes/field.html' with field=form.logo_black %}
+            {% if form.instance.logo_black %}
+            <div style="margin-top:10px;padding:10px;background:#f5f5f5;border-radius:8px;display:inline-block;">
+              <img src="{{ form.instance.logo_black.url }}" alt="Black logo" style="height:36px;object-fit:contain;max-width:160px;">
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        <div style="max-width:360px;">
+          {% include 'dashboard/includes/field.html' with field=form.favicon %}
+          {% if form.instance.favicon %}
+          <div style="margin-top:10px;display:flex;align-items:center;gap:12px;">
+            <div style="padding:10px;background:var(--bg);border-radius:8px;display:inline-block;border:1px solid var(--border);">
+              <img src="{{ form.instance.favicon.url }}" alt="Favicon" style="width:32px;height:32px;object-fit:contain;display:block;">
+            </div>
+            <span style="font-size:12px;color:var(--text-3);">32×32 preview</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button type="submit" class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+        Save
+      </button>
+      <a href="{% url 'db_index' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

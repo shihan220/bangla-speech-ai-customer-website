@@ -1,0 +1,437 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- ══════════════════════════════════
+     HERO
+══════════════════════════════════ -->
+<section class="hero">
+  <canvas id="heroWave" aria-hidden="true"></canvas>
+  <div class="hero-glow glow-1"></div>
+  <div class="hero-glow glow-2"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <span class="badge-pulse"></span>
+        {{ s.hero_badge }}
+      </div>
+      <h1 class="hero-title">
+        {{ s.hero_title }}<br />
+        <span class="text-gradient">{{ s.hero_title_highlight }}</span>
+      </h1>
+      <p class="hero-subtitle">{{ s.hero_subtitle }}</p>
+      <div class="hero-btns">
+        <button type="button" class="btn-hero-primary" id="openDemoModalHero">
+          {{ s.hero_btn_primary }}
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     VOICE DEMO CAROUSEL
+══════════════════════════════════ -->
+<section class="section-voices" id="voices">
+  <canvas id="vsBg" aria-hidden="true"></canvas>
+  <div class="container">
+    <h2 class="voices-heading">{{ s.voices_heading }}</h2>
+  </div>
+
+  <div class="vc-outer">
+    <div class="vc-track" id="vcTrack">
+      {% for voice in voices %}
+      <div class="vc-card">
+        <div class="vc-top">
+          <span class="vc-name">{{ voice.name }}</span>
+        </div>
+        <p class="vc-script">"{{ voice.script_text }}"</p>
+        <div class="vc-player"
+             data-duration="{{ voice.duration }}"
+             {% if voice.audio_file %}data-audio="{{ voice.audio_file.url }}"{% endif %}>
+          <button class="vc-play-btn" aria-label="Play {{ voice.name }}"></button>
+          <canvas class="vc-waveform" data-seed="{{ voice.wave_seed }}"></canvas>
+          <span class="vc-dur">0:0{{ voice.duration|floatformat:"0" }}</span>
+        </div>
+      </div>
+      {% empty %}
+      <p style="color:rgba(255,255,255,0.4);padding:24px;">Add Voice Cards from the Admin panel.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="vc-nav">
+    <button class="vc-arrow" id="vcPrev" aria-label="Previous"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="vc-arrow" id="vcNext" aria-label="Next"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     PRICING
+══════════════════════════════════ -->
+{% if pricing_plans %}
+<section class="section-pricing" id="pricing">
+  <canvas id="pricingBg" aria-hidden="true"></canvas>
+  <div class="container">
+    <div class="section-head center">
+      <span class="section-badge">{{ s.pricing_badge }}</span>
+      <h2 class="section-title pricing-gradient-title">{{ s.pricing_heading }}</h2>
+      <p class="section-sub" style="color:rgba(255,255,255,0.55);">{{ s.pricing_sub }}</p>
+    </div>
+  </div>
+
+  <!-- Slider -->
+  <div class="pricing-slider-outer">
+    <div class="pricing-slider-track" id="pricingTrack">
+      {% for plan in pricing_plans %}
+      <div class="pricing-slide" data-index="{{ forloop.counter0 }}">
+        <div class="pricing-card{% if plan.is_featured %} pricing-card-featured{% endif %}">
+          {% if plan.badge_text %}
+          <div class="pricing-badge">{{ plan.badge_text }}</div>
+          {% endif %}
+          <div class="pricing-card-top">
+            <h3 class="pricing-name">{{ plan.name }}</h3>
+            <div class="pricing-price-row">
+              <span class="pricing-price">{{ plan.price }}</span>
+              {% if plan.price_period %}
+              <span class="pricing-period">{{ plan.price_period }}</span>
+              {% endif %}
+            </div>
+            <p class="pricing-desc">{{ plan.description }}</p>
+          </div>
+          <div class="pricing-divider"></div>
+          <ul class="pricing-features">
+            {% for feature in plan.features_list %}
+            <li class="pricing-feature">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+              {{ feature }}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <div class="pricing-nav">
+    <button class="pricing-arrow" id="pricingPrev" aria-label="Previous">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <div class="pricing-dots" id="pricingDots">
+      {% for plan in pricing_plans %}
+      <button class="pricing-dot" aria-label="{{ plan.name }}"></button>
+      {% endfor %}
+    </div>
+    <button class="pricing-arrow" id="pricingNext" aria-label="Next">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══════════════════════════════════
+     API SECTION (after voices)
+══════════════════════════════════ -->
+<section class="section-api">
+  <div class="container">
+    <div class="api-grid">
+      <div class="api-text">
+        <span class="section-badge section-badge-light">{{ s.api_badge }}</span>
+        <h2 class="api-heading">{{ s.api_heading }}</h2>
+        <p class="api-para">{{ s.api_body }}</p>
+        <ul class="api-list">
+          {% for feature in s.api_features_list %}
+          <li>
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M16.7 5.3l-8.5 8.5-3.9-3.9" stroke="#C09060" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            {{ feature }}
+          </li>
+          {% endfor %}
+        </ul>
+        <div class="api-btns">
+          <button type="button" class="btn-api-primary" id="openContactModal">{{ s.api_btn_text }}</button>
+        </div>
+      </div>
+      <div class="api-code-wrap">
+        <div class="code-window">
+          <div class="code-header">
+            <div class="code-dots"><span style="background:#ff5f57;"></span><span style="background:#febc2e;"></span><span style="background:#28c840;"></span></div>
+            <span class="code-label">{{ s.api_code_lang }}</span>
+          </div>
+          <pre class="code-body"><code>{{ s.api_code_content }}</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     STATS
+══════════════════════════════════ -->
+{% if stats %}
+<section class="section-stats">
+  <div class="container">
+    <div class="stats-grid">
+      {% for stat in stats %}
+        <div class="stat-item">
+          <span class="stat-num">{{ stat.number }}</span>
+          <span class="stat-lbl">{{ stat.label }}</span>
+        </div>
+        {% if not forloop.last %}<div class="stat-div"></div>{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══════════════════════════════════
+     USE CASES CAROUSEL
+══════════════════════════════════ -->
+<section class="section-usecases" id="usecases">
+  <canvas id="ucBg" aria-hidden="true"></canvas>
+  <div class="uc-header">
+    <h2 class="uc-main-title">{{ s.usecases_heading }}<br><em>{{ s.usecases_heading_highlight }}</em></h2>
+  </div>
+  <div class="uc-outer">
+    <div class="uc-track" id="ucTrack">
+      {% for slide in use_cases %}
+      <div class="uc-slide">
+        <div class="uc-img uc-img-{{ slide.slide_type }}">
+          {% if slide.badge_text %}<span class="uc-badge">{{ slide.badge_text }}</span>{% endif %}
+          {% if slide.slide_type == 'podcast' %}
+          <svg class="uc-deco-wave" width="100%" height="72" viewBox="0 0 360 72" preserveAspectRatio="none" fill="none"><polyline points="0,36 18,18 36,50 54,12 72,42 90,22 108,48 126,28 144,52 162,18 180,44 198,26 216,50 234,22 252,44 270,20 288,48 306,28 324,50 342,30 360,36" stroke="rgba(255,146,48,0.45)" stroke-width="2.5" fill="none" stroke-linejoin="round"/></svg>
+          {% elif slide.slide_type == 'audio' %}
+          <div class="uc-pdf-mock"><svg width="36" height="44" viewBox="0 0 36 44" fill="none"><rect width="36" height="44" rx="5" fill="rgba(255,255,255,0.1)"/><path d="M7 14h22M7 22h14M7 30h18" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linecap="round"/></svg><span class="uc-pdf-label">chapter_01.pdf</span></div>
+          {% elif slide.slide_type == 'marketing' %}
+          <div class="uc-locked-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Pronunciation locked</div>
+          {% elif slide.slide_type == 'training' %}
+          <div class="uc-progress-mock"><span class="uc-prog-label">Module 3 of 8</span><div class="uc-prog-bar"><span style="width:72%"></span></div></div>
+          {% elif slide.slide_type == 'access' %}
+          <svg class="uc-deco-rings" width="180" height="180" viewBox="0 0 180 180" fill="none"><circle cx="90" cy="90" r="70" stroke="rgba(168,125,255,0.15)" stroke-width="1.5"/><circle cx="90" cy="90" r="52" stroke="rgba(168,125,255,0.2)" stroke-width="1.5"/><circle cx="90" cy="90" r="34" fill="rgba(168,125,255,0.08)" stroke="rgba(168,125,255,0.3)" stroke-width="1.5"/><path d="M82,90 L88,96 L100,84" stroke="#A87DFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          {% elif slide.slide_type == 'video' %}
+          <div class="uc-play-mock"><svg width="64" height="64" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="30" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/><circle cx="32" cy="32" r="22" fill="rgba(255,255,255,0.1)"/><path d="M27 23l18 9-18 9V23z" fill="white"/></svg></div>
+          {% endif %}
+          <div class="uc-img-text">{{ slide.overlay_text|linebreaksbr }}</div>
+        </div>
+        <div class="uc-info">
+          <h3 class="uc-name">{{ slide.title }}</h3>
+          <p class="uc-text">{{ slide.description }}</p>
+        </div>
+      </div>
+      {% empty %}
+      <p style="color:rgba(255,255,255,0.4);padding:24px;">Add Use Case Slides from the Admin panel.</p>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="uc-nav">
+    <button class="uc-btn" id="ucPrev" aria-label="Previous"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="uc-btn" id="ucNext" aria-label="Next"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════ -->
+{% if hiw_steps %}
+<section class="section-hiw">
+  <canvas class="orbit-bg" aria-hidden="true"></canvas>
+  <div class="container">
+    <div class="section-head center">
+      <span class="section-badge">How it works</span>
+      <h2 class="section-title">From script to audio in minutes</h2>
+      <p class="section-sub">A few simple steps to professional-quality voiceovers</p>
+    </div>
+    <div class="hiw-grid">
+      {% for step in hiw_steps %}
+        <div class="hiw-step">
+          <div class="hiw-num">{{ step.step_number }}</div>
+          <h3 class="hiw-title">{{ step.title }}</h3>
+          <p class="hiw-desc">{{ step.description }}</p>
+        </div>
+        {% if not forloop.last %}<div class="hiw-connector"></div>{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══════════════════════════════════
+     FAQ
+══════════════════════════════════ -->
+{% if faqs %}
+<section class="section-faq">
+  <canvas class="orbit-bg" aria-hidden="true"></canvas>
+  <div class="container">
+    <div class="section-head center">
+      <span class="section-badge">FAQ</span>
+      <h2 class="section-title">Frequently asked questions</h2>
+      <p class="section-sub">Everything you need to know about Bangla Speech AI</p>
+    </div>
+    <div class="faq-list" id="faqList">
+      {% for faq in faqs %}
+      <div class="faq-item">
+        <button class="faq-q" type="button">
+          {{ faq.question }}
+          <svg class="faq-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="faq-a"><p>{{ faq.answer }}</p></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══════════════════════════════════
+     VOICE API CTA (illustrated)
+══════════════════════════════════ -->
+
+
+<!-- ══════════════════════════════════
+     CTA BANNER
+══════════════════════════════════ -->
+<section class="section-cta">
+  <div class="cta-glow cta-glow-1"></div>
+  <div class="cta-glow cta-glow-2"></div>
+  <div class="container">
+    <div class="cta-inner">
+      <h2 class="cta-title">{{ s.cta_title }}</h2>
+      <p class="cta-sub">{{ s.cta_subtitle }}</p>
+  
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     CONTACT US MODAL
+══════════════════════════════════ -->
+<div class="demo-overlay" id="contactOverlay">
+  <div class="demo-modal" id="contactModal">
+    <button class="demo-close" id="contactClose" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+
+    <!-- Form view -->
+    <div id="contactFormView">
+      <div class="demo-modal-header">
+        <div class="demo-modal-badge">Get in touch</div>
+        <h2>Contact Us</h2>
+        <p>Send us a message and we'll get back to you within 24 hours.</p>
+      </div>
+      <form id="contactForm" novalidate>
+        {% csrf_token %}
+
+        <!-- Row: Name + Email -->
+        <div class="demo-form-row">
+          <div class="demo-field">
+            <label for="cf_name">Full name</label>
+            <input type="text" id="cf_name" name="name" placeholder="Rahela Khan" autocomplete="name">
+            <p class="demo-field-err" id="err_cf_name"></p>
+          </div>
+          <div class="demo-field">
+            <label for="cf_email">Email</label>
+            <input type="email" id="cf_email" name="email" placeholder="you@example.com" autocomplete="email">
+            <p class="demo-field-err" id="err_cf_email"></p>
+          </div>
+        </div>
+
+        <!-- Phone (optional) -->
+        <div class="demo-field">
+          <label for="cf_phone">Phone <span style="font-weight:400;opacity:0.45;">(optional)</span></label>
+          <input type="tel" id="cf_phone" name="phone" placeholder="+880 1xxx-xxxxxx" autocomplete="tel">
+          <p class="demo-field-err" id="err_cf_phone"></p>
+        </div>
+
+        <!-- Message -->
+        <div class="demo-field">
+          <label for="cf_message">Message</label>
+          <textarea id="cf_message" name="message" rows="5"
+            placeholder="Tell us about your project or ask any question…"></textarea>
+          <p class="demo-field-err" id="err_cf_message"></p>
+        </div>
+
+        <div class="demo-form-actions">
+          <button type="submit" class="demo-submit" id="contactSubmitBtn">
+            <span id="contactSubmitLabel">Send Message</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Success view -->
+    <div id="contactSuccessView" style="display:none;">
+      <div class="demo-success">
+        <div class="demo-success-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h2>Message sent!</h2>
+        <p>Thanks for reaching out. We'll get back to you<br>within <strong>24 hours</strong>.</p>
+        <button class="demo-submit demo-submit-outline" id="contactSuccessClose">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var overlay   = document.getElementById('contactOverlay');
+  var formView  = document.getElementById('contactFormView');
+  var succView  = document.getElementById('contactSuccessView');
+  var form      = document.getElementById('contactForm');
+  var submitBtn = document.getElementById('contactSubmitBtn');
+  var submitLbl = document.getElementById('contactSubmitLabel');
+
+  function openModal()  { overlay.classList.add('open');    document.body.style.overflow = 'hidden'; }
+  function closeModal() { overlay.classList.remove('open'); document.body.style.overflow = ''; }
+
+  document.getElementById('openContactModal')?.addEventListener('click', openModal);
+  document.getElementById('contactClose').addEventListener('click', closeModal);
+  document.getElementById('contactSuccessClose')?.addEventListener('click', closeModal);
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) closeModal(); });
+
+  function clearErrors() {
+    ['cf_name','cf_email','cf_phone','cf_message'].forEach(function(id) {
+      var err = document.getElementById('err_' + id);
+      var inp = document.getElementById(id);
+      if (err) err.textContent = '';
+      if (inp) inp.classList.remove('demo-input-err');
+    });
+  }
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    clearErrors();
+    submitBtn.disabled = true;
+    submitLbl.textContent = 'Sending…';
+
+    try {
+      var resp = await fetch('/contact-us/', { method: 'POST', body: new FormData(form) });
+      var json = await resp.json();
+      if (json.ok) {
+        formView.style.display = 'none';
+        succView.style.display = 'block';
+      } else {
+        if (json.errors) {
+          Object.entries(json.errors).forEach(function([k, msg]) {
+            var errEl = document.getElementById('err_cf_' + k);
+            var inpEl = document.getElementById('cf_' + k);
+            if (errEl) errEl.textContent = msg;
+            if (inpEl) inpEl.classList.add('demo-input-err');
+          });
+        }
+        submitBtn.disabled = false;
+        submitLbl.textContent = 'Send Message';
+      }
+    } catch (_) {
+      submitBtn.disabled = false;
+      submitLbl.textContent = 'Send Message';
+    }
+  });
+})();
+</script>
+
+{% endblock %}

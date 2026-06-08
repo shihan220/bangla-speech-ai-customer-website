@@ -1,0 +1,151 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Contact Submissions{% endblock %}
+
+{% block content %}
+<div class="db-topbar">
+  <div class="db-topbar-left">
+    <div class="db-breadcrumb">
+      <a href="{% url 'db_index' %}">Overview</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <span>Contact Submissions</span>
+    </div>
+    <h1 class="db-page-title">Contact Submissions</h1>
+  </div>
+  <div class="db-topbar-actions">
+    <span style="font-size:13px;color:var(--text-3);">{{ contacts|length }} message{{ contacts|length|pluralize }}</span>
+  </div>
+</div>
+
+<div class="db-content">
+  <div class="db-section">
+    {% if contacts %}
+    <table class="db-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Name</th>
+          <th>Email / Phone</th>
+          <th>Message</th>
+          <th style="text-align:right;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in contacts %}
+        <tr>
+          <td style="white-space:nowrap;color:var(--text-3);font-size:12.5px;min-width:90px;">
+            {{ c.created_at|date:"d M Y" }}<br>
+            <span style="font-size:11px;opacity:0.6;">{{ c.created_at|time:"H:i" }}</span>
+          </td>
+          <td class="col-name">{{ c.name }}</td>
+          <td>
+            <a href="mailto:{{ c.email }}" style="color:var(--accent);text-decoration:none;font-size:13.5px;">{{ c.email }}</a>
+            {% if c.phone %}<br><span style="font-size:11.5px;color:var(--text-3);">{{ c.phone }}</span>{% endif %}
+          </td>
+          <td style="max-width:260px;">
+            <p style="font-size:13px;color:var(--text-2);line-height:1.5;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.message|truncatechars:65 }}</p>
+          </td>
+          <td class="col-actions">
+            <button class="btn btn-secondary btn-sm view-btn"
+                    data-name="{{ c.name|escapejs }}"
+                    data-email="{{ c.email }}"
+                    data-phone="{{ c.phone|escapejs }}"
+                    data-message="{{ c.message|escapejs }}"
+                    data-date="{{ c.created_at|date:'d M Y' }} at {{ c.created_at|time:'H:i' }}"
+                    data-initials="{{ c.name|first|upper }}{% if c.name.split.1 %}{{ c.name.split.1|first|upper }}{% endif %}"
+                    data-color-idx="{{ forloop.counter0 }}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              View
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="db-empty">
+      <div class="db-empty-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      </div>
+      <p class="db-empty-title">No messages yet</p>
+      <p class="db-empty-sub">Submissions from the "Contact Us" button will appear here.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="bk-overlay" id="ctOverlay">
+  <div class="bk-modal">
+    <button class="bk-close" id="ctClose" aria-label="Close">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+
+    <div class="bk-header">
+      <div class="bk-avatar" id="ctAvatar">?</div>
+      <div class="bk-header-info">
+        <h3 class="bk-name" id="ctName"></h3>
+        <a class="bk-email" id="ctEmail" href="#"></a>
+        <p class="bk-company" id="ctPhone" style="font-size:12px;color:var(--text-3);margin-top:2px;"></p>
+      </div>
+    </div>
+
+    <p class="bk-date" id="ctDate"></p>
+
+    <div class="bk-section">
+      <p class="bk-section-label">Message</p>
+      <div class="bk-text-box" id="ctMessage"></div>
+    </div>
+
+    <div class="bk-actions">
+      <a class="btn btn-primary btn-sm" id="ctMailBtn" href="#">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Reply via Email
+      </a>
+      <button class="btn btn-secondary btn-sm" id="ctCloseBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var COLORS = ['#F0A050','#4A90E2','#22c55e','#a855f7','#14b8a6','#f472b6','#38bdf8'];
+  var overlay = document.getElementById('ctOverlay');
+
+  function open(btn) {
+    var name    = btn.dataset.name;
+    var email   = btn.dataset.email;
+    var phone   = btn.dataset.phone;
+    var message = btn.dataset.message;
+    var date    = btn.dataset.date;
+    var initials= btn.dataset.initials || name.charAt(0).toUpperCase();
+    var color   = COLORS[parseInt(btn.dataset.colorIdx) % COLORS.length];
+
+    var av = document.getElementById('ctAvatar');
+    av.textContent = initials;
+    av.style.background = color + '22';
+    av.style.color = color;
+    av.style.border = '2px solid ' + color + '44';
+
+    document.getElementById('ctName').textContent = name;
+    var emailEl = document.getElementById('ctEmail');
+    emailEl.textContent = email;
+    emailEl.href = 'mailto:' + email;
+    document.getElementById('ctPhone').textContent = phone || '';
+    document.getElementById('ctDate').textContent = 'Submitted on ' + date;
+    document.getElementById('ctMessage').textContent = message;
+    document.getElementById('ctMailBtn').href = 'mailto:' + email + '?subject=Re: Your message — Bangla Speech AI';
+
+    overlay.classList.add('open');
+  }
+
+  function close() { overlay.classList.remove('open'); }
+
+  document.querySelectorAll('.view-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() { open(btn); });
+  });
+  document.getElementById('ctClose').addEventListener('click', close);
+  document.getElementById('ctCloseBtn').addEventListener('click', close);
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) close(); });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}FAQs{% endblock %}
+
+{% block content %}
+<div class="db-topbar">
+  <div class="db-topbar-left">
+    <div class="db-breadcrumb">
+      <a href="{% url 'db_index' %}">Overview</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <span>FAQs</span>
+    </div>
+    <h1 class="db-page-title">FAQs</h1>
+  </div>
+  <div class="db-topbar-actions">
+    <a href="{% url 'db_faq_new' %}" class="btn btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add FAQ
+    </a>
+  </div>
+</div>
+
+<div class="db-content">
+  <div class="db-section">
+    {% if faqs %}
+    <table class="db-table">
+      <thead>
+        <tr>
+          <th style="width:32px;"></th>
+          <th>Question</th>
+          <th>Status</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for faq in faqs %}
+        <tr>
+          <td>
+            <div class="move-btns">
+              <form method="post" action="{% url 'db_faq_move' faq.pk 'up' %}">{% csrf_token %}
+                <button type="submit" title="Move up">▲</button>
+              </form>
+              <form method="post" action="{% url 'db_faq_move' faq.pk 'down' %}">{% csrf_token %}
+                <button type="submit" title="Move down">▼</button>
+              </form>
+            </div>
+          </td>
+          <td class="col-name">{{ faq.question|truncatechars:70 }}</td>
+          <td>
+            <form class="toggle-form" method="post" action="{% url 'db_faq_toggle' faq.pk %}">
+              {% csrf_token %}
+              <button class="btn-toggle {% if faq.is_active %}on{% else %}off{% endif %}" type="submit">
+                <span class="badge-dot"></span>
+                {% if faq.is_active %}Active{% else %}Inactive{% endif %}
+              </button>
+            </form>
+          </td>
+          <td class="col-actions">
+            <a href="{% url 'db_faq_edit' faq.pk %}" class="btn btn-ghost btn-icon" title="Edit">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </a>
+            <button class="btn btn-ghost btn-icon" type="button"
+                    data-delete-url="{% url 'db_faq_delete' faq.pk %}"
+                    data-delete-name="{{ faq.question|truncatechars:40 }}" title="Delete">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="db-empty">
+      <div class="db-empty-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/></svg>
+      </div>
+      <p class="db-empty-title">No FAQs yet</p>
+      <p class="db-empty-sub">Add frequently asked questions to display on the homepage.</p>
+      <a href="{% url 'db_faq_new' %}" class="btn btn-primary">Add FAQ</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

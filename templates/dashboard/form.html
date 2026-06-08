@@ -1,0 +1,46 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<div class="db-topbar">
+  <div class="db-topbar-left">
+    <div class="db-breadcrumb">
+      <a href="{{ cancel_url }}">{{ section_name }}</a>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      <span>{{ form_title }}</span>
+    </div>
+    <h1 class="db-page-title">{{ form_title }}</h1>
+  </div>
+</div>
+
+<div class="db-content">
+  <form method="post" enctype="multipart/form-data" id="mainForm">
+    {% csrf_token %}
+    <div class="db-form-card">
+      <div class="db-form-fields">
+        {% for field in form %}
+          {% include 'dashboard/includes/field.html' with field=field %}
+        {% endfor %}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+          Save changes
+        </button>
+        <a href="{{ cancel_url }}" class="btn btn-secondary">Cancel</a>
+        {% if obj and delete_url %}
+          <span class="ml-auto">
+            <button type="button" class="btn btn-danger"
+                    data-delete-url="{{ delete_url }}"
+                    data-delete-name="{{ obj }}">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+              Delete
+            </button>
+          </span>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

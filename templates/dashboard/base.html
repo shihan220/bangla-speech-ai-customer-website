@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Dashboard{% endblock %} — BSA Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+</head>
+<body class="db-body">
+
+<!-- Delete confirmation modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <div class="modal-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/>
+      </svg>
+    </div>
+    <h3 class="modal-title">Delete this item?</h3>
+    <p class="modal-desc" id="modalDesc">This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="modalCancel">Cancel</button>
+      <button class="btn btn-danger" id="modalConfirm">Delete</button>
+    </div>
+  </div>
+</div>
+<form id="deleteActionForm" method="post" style="display:none;">{% csrf_token %}</form>
+
+<!-- Mobile overlay -->
+<div id="sidebarOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99;backdrop-filter:blur(2px);" onclick="document.getElementById('dbSidebar').classList.remove('open');this.style.display='none';"></div>
+
+<!-- Toasts -->
+<div class="toast-stack">
+  {% for msg in messages %}
+  <div class="toast toast-{% if 'success' in msg.tags %}success{% elif 'error' in msg.tags %}error{% else %}info{% endif %}" data-auto-dismiss>
+    <span class="toast-icon">{% if 'success' in msg.tags %}✓{% elif 'error' in msg.tags %}✗{% else %}i{% endif %}</span>
+    <span class="toast-text">{{ msg }}</span>
+    <button class="toast-close" onclick="this.closest('.toast').remove()">×</button>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="db-wrap">
+
+  <!-- Sidebar -->
+  <aside class="db-sidebar" id="dbSidebar">
+    <div class="db-sidebar-header">
+      <a href="{% url 'db_index' %}" class="db-logo">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="#0C0C0E"/>
+          <text x="5" y="24" font-family="Noto Sans Bengali, serif" font-size="20" font-weight="900" fill="#F0A050">ব</text>
+          <path d="M20,18 Q24,15 28,18" stroke="#2ED8FF" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          <path d="M20,21 Q24,18 28,21" stroke="#F0A050" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        </svg>
+        <span class="db-logo-text">BSA <span class="db-logo-sub">Admin</span></span>
+      </a>
+    </div>
+
+    <nav class="db-nav">
+
+      <!-- Overview -->
+      <a href="{% url 'db_index' %}" class="db-nav-item{% if request.path == '/dashboard/' %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+        Overview
+      </a>
+
+      <!-- Settings -->
+      <a href="{% url 'db_settings' %}" class="db-nav-item{% if request.path == '/dashboard/settings/' %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Site Settings
+      </a>
+
+      <!-- Hero Section -->
+      <a href="{% url 'db_hero' %}" class="db-nav-item{% if '/dashboard/hero' in request.path %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Hero Section
+      </a>
+
+      <!-- Announcement -->
+      <a href="{% url 'db_announcement' %}" class="db-nav-item{% if '/dashboard/announcement' in request.path %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17H2a3 3 0 000 6h20a3 3 0 000-6z"/><path d="M12 17V3"/><path d="M5 9l7-6 7 6"/></svg>
+        Announcement Bar
+      </a>
+
+      <!-- CTA & Headings -->
+      <a href="{% url 'db_cta_headings' %}" class="db-nav-item{% if '/dashboard/cta' in request.path %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        CTA &amp; Headings
+      </a>
+
+      <!-- API Section -->
+      <a href="{% url 'db_api_section' %}" class="db-nav-item{% if '/dashboard/api-section' in request.path %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        API Section
+      </a>
+
+      <div class="db-nav-divider"></div>
+      <p class="db-nav-group-label">Content</p>
+
+      <!-- Voice Cards -->
+      <a href="{% url 'db_voices' %}" class="db-nav-item{% if '/dashboard/voices' in request.path %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        Voice Cards
+        {% if nav_vc_count %}<span class="db-nav-badge">{{ nav_vc_count }}</span>{% endif %}
+      </a>
+
+      <!-- Stats -->
+      <a href="{% url 'db_stats' %}" class="db-nav-item{% if '/dashboard/stats' in request.path %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+        Stats
+        {% if nav_stat_count %}<span class="db-nav-badge">{{ nav_stat_count }}</span>{% endif %}
+      </a>
+
+      <!-- FAQs -->
+      <a href="{% url 'db_faqs' %}" class="db-nav-item{% if '/dashboard/faqs' in request.path %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        FAQs
+        {% if nav_faq_count %}<span class="db-nav-badge">{{ nav_faq_count }}</span>{% endif %}
+      </a>
+
+      <!-- Use Cases -->
+      <a href="{% url 'db_usecases' %}" class="db-nav-item{% if '/dashboard/usecases' in request.path %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        Use Cases
+        {% if nav_uc_count %}<span class="db-nav-badge">{{ nav_uc_count }}</span>{% endif %}
+      </a>
+
+      <!-- How It Works -->
+      <a href="{% url 'db_hiw' %}" class="db-nav-item{% if '/dashboard/hiw' in request.path %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        How It Works
+        {% if nav_hiw_count %}<span class="db-nav-badge">{{ nav_hiw_count }}</span>{% endif %}
+      </a>
+
+      <!-- Pricing -->
+      <a href="{% url 'db_pricing' %}" class="db-nav-item{% if '/dashboard/pricing' in request.path %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Pricing
+        {% if nav_pricing_count %}<span class="db-nav-badge">{{ nav_pricing_count }}</span>{% endif %}
+      </a>
+
+      <div class="db-nav-divider"></div>
+      <p class="db-nav-group-label">Leads</p>
+
+      <!-- Demo Bookings -->
+      <a href="{% url 'db_bookings' %}" class="db-nav-item{% if '/dashboard/bookings' in request.path %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Demo Bookings
+        {% if nav_booking_count %}<span class="db-nav-badge" style="background:rgba(240,160,80,0.18);color:#F0A050;">{{ nav_booking_count }}</span>{% endif %}
+      </a>
+
+      <!-- Contact Submissions -->
+      <a href="{% url 'db_contacts' %}" class="db-nav-item{% if '/dashboard/contacts' in request.path %} active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Contact Messages
+      </a>
+
+    </nav>
+
+    <div class="db-sidebar-footer">
+      <a href="/" target="_blank" class="db-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        View Site
+      </a>
+      <form method="post" action="{% url 'db_logout' %}" style="margin:0;">
+        {% csrf_token %}
+        <button type="submit" class="db-nav-item db-logout-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          {{ request.user.username }}
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="db-main">
+    {% block content %}{% endblock %}
+  </main>
+
+</div>
+
+<script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>

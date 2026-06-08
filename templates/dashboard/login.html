@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login — BSA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}"/>
+</head>
+<body class="db-login-body">
+
+<div class="db-login-card">
+  <div class="db-login-logo">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="8" fill="#0C0C0E"/>
+      <text x="5" y="24" font-family="Noto Sans Bengali, serif" font-size="20" font-weight="900" fill="#F0A050">ব</text>
+      <path d="M20,18 Q24,15 28,18" stroke="#2ED8FF" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M20,21 Q24,18 28,21" stroke="#F0A050" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span class="db-login-logo-text">BSA <span>Admin</span></span>
+  </div>
+
+  <h1 class="db-login-title">Welcome back</h1>
+  <p class="db-login-sub">Sign in to manage your site content</p>
+
+  {% if form.errors %}
+  <div class="db-login-error">Incorrect username or password. Please try again.</div>
+  {% endif %}
+
+  <form method="post" class="db-login-form">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next|default:'/dashboard/' }}">
+
+    <div class="field-group">
+      <label class="field-label" for="{{ form.username.id_for_label }}">Username</label>
+      <input class="db-input" type="text" name="username" id="{{ form.username.id_for_label }}"
+             autocomplete="username" autofocus placeholder="your-username"
+             value="{{ form.username.value|default:'' }}">
+    </div>
+
+    <div class="field-group">
+      <label class="field-label" for="{{ form.password.id_for_label }}">Password</label>
+      <input class="db-input" type="password" name="password" id="{{ form.password.id_for_label }}"
+             autocomplete="current-password" placeholder="••••••••">
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;">
+      Sign in
+    </button>
+  </form>
+
+  <p class="db-login-note">Only staff accounts can access this dashboard.</p>
+</div>
+
+</body>
+</html>
